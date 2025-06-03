@@ -1,0 +1,158 @@
+#glimpse of data
+glimpse(data)
+# Set the path to CSV file
+csv_file <- "C:\\Users\\aisha\\OneDrive\\Documents\\Assignments\\2nd Year\\first sem\\PFDA\\Assignment\\employee_attrition.csv"
+# Import the CSV file using data.tables
+data <- fread(csv_file, header = TRUE)
+# Remove duplicate records based on employee ID
+data <- unique(data, by = "Employee_ID")
+# Perform encoding for job titles
+encoded_titles <- data.table::dcast(data, Employee_ID + Age ~ Job, value.var = "Job", fun.aggregate = length, fill = 0)
+# Perform encoding for job titles
+encoded_titles <- data.table::dcast(data, Employee_ID + Age ~ Job, value.var = "Job", fun.aggregate = length, fill = 0)
+# Perform encoding for job titles
+encoded_titles <- data.table::dcast(data, Employee_ID + Age ~ Job, value.var = "Job", fun.aggregate = length, fill = 0)
+#Aishath Shafa Saudulla
+#TP066434
+#Step 1: DATA IMPORT (Import CSV file)
+# Load the required libraries
+library(data.table)
+library(dplyr)
+library(lubridate)
+library(tidyverse)
+library(lattice)
+library(treemap)
+library(gganimate)
+# Set the path to CSV file
+csv_file <- "C:\\Users\\aisha\\OneDrive\\Documents\\Assignments\\2nd Year\\first sem\\PFDA\\Assignment\\employee_attrition.csv"
+# Import the CSV file using data.tables
+data <- fread(csv_file, header = TRUE)
+#Assigning Headers
+names(data)=c("Employee_ID","Record_Date","Birth_Date","Hired_Date","Termination_Date","Age","Length_of_Service","City","Department","Job","Store","Gender_Short","Gender","Reason_Termination","Type_Termination","Status_Year","Status","Business_Unit")
+#STEP 2: DATA CLEANING
+# Remove duplicate records based on employee ID
+data <- unique(data, by = "Employee_ID")
+#STEP 3: DATA PRE-PROCESSING
+# Perform encoding for job titles
+encoded_titles <- data.table::dcast(data, Employee_ID + Age ~ Job, value.var = "Job", fun.aggregate = length, fill = 0)
+# Convert data$Age to numeric if it is not already numeric
+if (!is.numeric(data$Age)) {
+data$Age <- as.numeric(data$Age)
+}
+# Create age groups
+data$age_group <- cut(data$Age, breaks = c(0, 20, 30, 40, 50, Inf), labels = c("Under 20", "20-29", "30-39", "40-49", "50+"))
+#STEP 4: DATA TRANSFORMATION
+# Create a new variable for month of birth
+# Convert data$Birth_Date to date format
+data$Birth_Date <- as.Date(data$Birth_Date)
+# Extract the birth month using lubridate::month() to create the variable
+data$birth_month <- lubridate::month(data$Birth_Date, label = TRUE)
+#STEP 5: DATA EXPLORATIOM
+# Viewing methods
+#view only 5
+head(data, 5)
+#view only title\heading
+names(data)
+#how data stored
+class(data)
+#summary min/max/average
+summary(data$Age)
+summary(data)
+#glimpse of data
+glimpse(data)
+-------------------------------------------------------------------------------++---------------------------------------------------
+#ANALYSIS BEGINS (15)
+#1 How many employees exist in the age groups
+# Plot a histogram for age
+hist(data$Age, col = "#B0E2FF", border = "black",
+xlab = "Age", ylab = "Count",
+main = "Histogram of Employee Ages by Count")
+glimpse(data)
+head(data, 5)
+head(data, 5)
+glimpse(data)
+# Plot a histogram for age
+hist(data$Age, col = "#B0E2FF", border = "black",
+xlab = "Age", ylab = "Count",
+main = "Histogram of Employee Ages by Count")
+filtered_data <- data %>%
+filter(Reason_Termination != "Not Applicable")
+ggplot(filtered_data, aes(x = Reason_Termination, y = Length_of_Service)) +
+geom_point(color = "red", size = 3) +
+xlab("Reason for Termination") +
+ylab("Length of Service") +
+theme(axis.line = element_line(colour = "black", size = 0.24))s
+filtered_data <- data %>%
+filter(Reason_Termination != "Not Applicable")
+ggplot(filtered_data, aes(x = Reason_Termination, y = Length_of_Service)) +
+geom_point(color = "red", size = 3) +
+xlab("Reason for Termination") +
+ylab("Length of Service") +
+theme(axis.line = element_line(colour = "black", size = 0.24))
+glimpse(data)
+# Plot a histogram for age
+hist(data$Age, col = "#B0E2FF", border = "black",
+xlab = "Age", ylab = "Count",
+main = "Histogram of Employee Ages by Count")
+# Filter the data for the top 12 departments
+top_departments <- head(sort(table(data$Department), decreasing = TRUE), 12)
+filtered_data <- data[data$Department %in% names(top_departments), ]
+# Create the boxplot
+ggplot(filtered_data, aes(x = Gender, y = Department)) +
+geom_boxplot(fill = "white", color = "black") +
+xlab("Gender") +
+ylab("Department") +
+ggtitle("Boxplot Analysis: Gender vs Top 12 Departments") +
+theme_minimal()
+ggplot(data, aes(x = Business_Unit)) +
+geom_bar(fill = "thistle1", color = "black") +
+labs(x = "Business Unit", y = "Count", title = "Count of Business Units")
+# Convert Hired_Date to Date format
+data$Hired_Date <- as.Date(data$Hired_Date, format = "%m/%d/%Y")
+# Extract year from Hired_Date
+data$Hired_Year <- format(data$Hired_Date, format = "%Y")
+# Set individual colors for each year
+colors <- c("#E69F00", "#56B4E9", "#F0E442", "#009E73", "#D55E00")
+# Create strip plot with separate colors for each year
+stripplot(Hired_Year ~ as.numeric(Hired_Date), data = data,
+pch = 16, col = colors, aspect = 1,
+main = "Range of Hired Dates", xlab = "Count", ylab = "Hired Date")
+# Calculate the count of employees in each city
+city_counts <- table(data$City)
+# Convert city_counts to a data frame
+city_counts_df <- as.data.frame(city_counts)
+# Rename the columns
+colnames(city_counts_df) <- c("City", "Count")
+# Create the treemap
+treemap(city_counts_df, index = "City", vSize = "Count", title = "Employee Count by City")
+# Calculate the count of each department
+department_counts <- table(data$Department)
+# Sort the department counts in descending order
+sorted_counts <- sort(department_counts, decreasing = TRUE)
+# Select the top 5 departments
+top_departments <- names(sorted_counts)[1:5]
+# Filter the data for the top 5 departments
+top_department_data <- data[data$Department %in% top_departments, ]
+# Count the occurrences of the top 5 departments
+top_department_counts <- table(top_department_data$Department)
+# Create a pie chart for the top 5 departments
+pie(top_department_counts, labels = top_department_counts,
+col = rainbow(length(top_department_counts)),
+main = "Top 5 Departments")
+# Add a legend
+legend("topright", legend = names(top_department_counts),
+fill = rainbow(length(top_department_counts)))
+# Calculate employee count by store
+store_counts <- table(data$Store)
+# Sort the store counts in descending order
+sorted_store_counts <- sort(store_counts, decreasing = TRUE)
+# Select the top 10 stores with the highest employee count
+top_10_stores <- head(sorted_store_counts, 10)
+# Visualize employee count by store (top 10 stores)
+barplot(top_10_stores, col = "#B9A2EC", border = "black",
+xlab = "Store", ylab = "Count",
+main = "Employee Count by Store (Top 10)")
+ggplot(na.omit(data), aes(x = birth_month)) +
+geom_bar(fill = "#B0E2FF") +
+labs(title = "Employee Birth Month Distribution", x = "Month", y = "Count") +
+theme_minimal()
